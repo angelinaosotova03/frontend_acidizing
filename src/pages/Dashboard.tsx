@@ -59,16 +59,16 @@ export function DashboardPage() {
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <NavTile icon={<FlaskConical size={20}/>} eyebrow="Volume Calc · /calculate_vols" title="Расчёт объёмов"
-          body="Раскладка кислотного состава: КС, продавка, товарная кислота, BaCl₂, стабилизаторы, ингибиторы."
-          accent="brand" stats={[{k:'Реагентов',v:'9'},{k:'Поля',v:'8'},{k:'Время',v:'~1с'}]} cta="Запустить расчёт" to="/volumes"/>
-        <NavTile icon={<TrendingUp size={20}/>} eyebrow="OPZ Predict · /predict" title="Прогноз эффекта ОПЗ"
-          body="Прогноз 12 месяцев после обработки на ML‑модели + базовая экстраполяция Арпса."
-          accent="green" stats={[{k:'Горизонт',v:'12 мес'},{k:'Графиков',v:'3'},{k:'Батч',v:'до 500'}]} cta="Открыть прогноз" to="/predict"/>
+        <NavTile icon={<FlaskConical size={20}/>} title="Расчёт объёмов"
+          body="Раскладка кислотного состава: КС, продавка, товарная кислота, HF/БФФА, лимонная и уксусная кислоты, доп. компоненты."
+          accent="brand" cta="Запустить расчёт" to="/volumes"/>
+        <NavTile icon={<TrendingUp size={20}/>} title="Прогноз эффекта ОПЗ"
+          body="Прогноз добычи на 12 месяцев после кислотной обработки с экстраполяцией по Арпсу."
+          accent="green" cta="Открыть прогноз" to="/predict"/>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <Card className="lg:col-span-2" title="Последние расчёты"
+      <div className="grid grid-cols-1 gap-5">
+        <Card title="Последние расчёты"
           right={<span className="chip mono">{history.length} записей</span>}>
           {loadingHistory ? (
             <div className="py-6 text-center text-ink-400 text-sm">Загрузка…</div>
@@ -104,15 +104,6 @@ export function DashboardPage() {
               </table>
             </div>
           )}
-        </Card>
-
-        <Card title="Состояние сервисов" right={<span className="chip ok"><span className="dot green" style={{marginRight:4}}/>все онлайн</span>}>
-          {[{name:'Auth API',url:'localhost:8001'},{name:'OPZ Predict',url:'localhost:8000'},{name:'Volume Calc',url:'localhost:8003'}].map(s => (
-            <div key={s.name} className="flex items-center justify-between py-2 border-b border-ink-200/70 last:border-b-0">
-              <div className="flex items-center gap-2.5"><span className="dot green"/><span className="text-[13px] font-medium text-ink-900">{s.name}</span></div>
-              <span className="mono text-[11px] text-ink-500">{s.url}</span>
-            </div>
-          ))}
         </Card>
       </div>
 
@@ -192,11 +183,18 @@ function VolumesDetail({ row }: { row: VolumeHistoryItem }) {
       <table className="dtable">
         <thead><tr><th>Реагент</th><th className="num">Объём</th><th className="num">Ед.</th></tr></thead>
         <tbody>
-          {VOL_REAGENTS.map(r => (
+          {VOL_REAGENTS.filter(r => !r.optional || (row[r.key] as number) > 0).map(r => (
             <tr key={r.key}>
               <td>{r.label}</td>
               <td className="num font-semibold tabnum">{fmt.num(row[r.key] as number, 3)}</td>
               <td className="num text-ink-400 mono">{r.unit}</td>
+            </tr>
+          ))}
+          {row.additives.map(a => (
+            <tr key={a.name}>
+              <td>{a.name}</td>
+              <td className="num font-semibold tabnum">{fmt.num(a.vol, 3)}</td>
+              <td className="num text-ink-400 mono">м³</td>
             </tr>
           ))}
         </tbody>
@@ -210,22 +208,20 @@ function VolumesDetail({ row }: { row: VolumeHistoryItem }) {
 }
 
 // ─── Стабильные константы для таблицы объёмов ──────────────────────────────
-const VOL_REAGENTS: { key: keyof VolumeHistoryItem; label: string; unit: string }[] = [
+const VOL_REAGENTS: { key: keyof VolumeHistoryItem; label: string; unit: string; optional?: boolean }[] = [
   { key: 'ks_vol',            label: 'Объём КС',           unit: 'м³' },
   { key: 'fluid_vol',         label: 'Продавочная жидкость', unit: 'м³' },
   { key: 'tovar_kislota_vol', label: 'Товарная кислота',    unit: 'м³' },
-  { key: 'hlor_bar_mass',     label: 'Хлористый барий',     unit: 'кг' },
-  { key: 'hlor_bar_vol',      label: 'Хлористый барий (объём)', unit: 'м³' },
-  { key: 'stabilizer_vol',    label: 'Стабилизатор',        unit: 'м³' },
-  { key: 'inhibitor_vol',     label: 'Ингибитор',           unit: 'м³' },
-  { key: 'intensifier_vol',   label: 'Активатор',           unit: 'м³' },
-  { key: 'plavikov_vol',      label: 'Плавиковая кислота',  unit: 'м³' },
+  { key: 'plavikov_vol',      label: 'Плавиковая кислота',  unit: 'м³', optional: true },
+  { key: 'citric_acid_vol',   label: 'Лимонная кислота',    unit: 'м³' },
+  { key: 'acetic_acid_vol',   label: 'Уксусная кислота',    unit: 'м³' },
+  { key: 'bffa_mass',         label: 'БФФА (навеска)',      unit: 'кг', optional: true },
   { key: 'water_vol',         label: 'Вода',                unit: 'м³' },
 ]
 
-function NavTile({ icon, eyebrow, title, body, stats, cta, to, accent }: {
-  icon: React.ReactNode; eyebrow: string; title: string; body: string
-  stats: {k:string;v:string}[]; cta: string; to: string; accent: 'brand'|'green'
+function NavTile({ icon, title, body, cta, to, accent }: {
+  icon: React.ReactNode; title: string; body: string
+  cta: string; to: string; accent: 'brand'|'green'
 }) {
   const navigate = useNavigate()
   const bg = accent === 'green' ? '#ECFDF5' : '#EFF6FF'
@@ -235,19 +231,10 @@ function NavTile({ icon, eyebrow, title, body, stats, cta, to, accent }: {
       <div className="p-6 flex flex-col gap-4 h-full">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-md flex items-center justify-center" style={{ background:bg, color:fg }}>{icon}</div>
-          <div className="mono text-[10px] uppercase tracking-[.1em] text-ink-400">{eyebrow}</div>
         </div>
         <div>
           <h3 className="text-[20px] font-semibold tracking-tight text-ink-900">{title}</h3>
           <p className="text-sm text-ink-500 mt-1.5 leading-relaxed">{body}</p>
-        </div>
-        <div className="grid grid-cols-3 gap-2 mt-1">
-          {stats.map(s => (
-            <div key={s.k} className="bg-ink-50 rounded-md px-3 py-2 border border-ink-200/70">
-              <div className="text-[10px] uppercase tracking-[.08em] text-ink-400 font-semibold">{s.k}</div>
-              <div className="mono text-[15px] font-semibold text-ink-900 tabnum mt-0.5">{s.v}</div>
-            </div>
-          ))}
         </div>
         <div className="mt-auto flex items-center justify-between pt-2">
           <span className="text-[13px] font-medium" style={{ color:fg }}>{cta}</span>

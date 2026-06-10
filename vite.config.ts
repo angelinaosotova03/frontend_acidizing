@@ -18,6 +18,10 @@ export default defineConfig({
         target: 'http://localhost:8003',
         changeOrigin: true,
       },
+      '/api/v1/fields': {
+        target: 'http://localhost:8003',
+        changeOrigin: true,
+      },
     },
   },
 })

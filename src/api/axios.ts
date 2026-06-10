@@ -67,6 +67,7 @@ function createInstance(baseURL: string): AxiosInstance {
   return instance
 }
 
-export const authAxios = createInstance('/api/v1/auth')
-export const opzAxios  = createInstance('/api/v1/predict')
-export const volAxios  = createInstance('/api/v1/volumes')
+export const authAxios   = createInstance('/api/v1/auth')
+export const opzAxios    = createInstance('/api/v1/predict')
+export const volAxios    = createInstance('/api/v1/volumes')
+export const fieldsAxios = createInstance('/api/v1/fields')

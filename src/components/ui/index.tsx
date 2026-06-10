@@ -22,7 +22,7 @@ export function Button({ variant = 'primary', size = 'md', loading, disabled, ic
 }
 
 // ─── Form helpers ────────────────────────────────────────────────────────────
-interface FieldProps { label?: string; unit?: string; help?: string; error?: string; children: React.ReactNode; optional?: boolean }
+interface FieldProps { label?: string; unit?: string; help?: React.ReactNode; error?: string; children: React.ReactNode; optional?: boolean }
 export function Field({ label, unit, help, error, children, optional }: FieldProps) {
   return (
     <div className="flex flex-col">
@@ -101,7 +101,7 @@ export function Tabs({ value, onChange, items }: TabsProps) {
   return (
     <div className="tabs">
       {items.map(it => (
-        <button key={it.value} className={value === it.value ? 'active' : ''} onClick={() => onChange(it.value)}>
+        <button key={it.value} type="button" className={value === it.value ? 'active' : ''} onClick={() => onChange(it.value)}>
           {it.icon && <span className="mr-1.5 inline-flex align-middle">{it.icon}</span>}
           {it.label}
         </button>

@@ -1,18 +1,20 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Calculator, TrendingUp, Download, Check, Plus, Trash2 } from 'lucide-react'
+import { Calculator, TrendingUp, Download, Check, Plus, Trash2, FlaskConical } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { AxiosError } from 'axios'
 import { Button, Card, Chip, Empty, Field, NumberInput, Input, SectionRule, Toggle } from '../components/ui'
 import { volumesApi } from '../api/volumes'
+import { fieldsApi } from '../api/fields'
 import { useHandoff } from '../hooks/useHandoff'
 import { downloadCsv } from '../utils/csv'
 import { fmt } from '../utils/format'
 import { get422Errors } from '../utils/errors'
 import type { VolumesFormValues, VolumesResponse } from '../types/volumes'
+import type { CompositionWithField } from '../types/fields'
 
 // ─── Zod-схема ──────────────────────────────────────────────────────────────
 const nktSectionSchema = z.object({
@@ -30,6 +32,7 @@ const schema = z.object({
   perf_depth:   z.number({ invalid_type_error: 'Введите число' }).positive(),
   grp_done:     z.number().int().min(0).max(1),
   grp_mass:     z.number().min(0),
+  composition_id: z.number().nullable(),
 }).superRefine((d, ctx) => {
   // секции в порядке возрастания глубины
   d.nkt_sections.forEach((sec, i) => {
@@ -56,25 +59,35 @@ const DEFAULTS: FormValues = {
   nkt_sections: [{ d: 0.073, thikness: 0.0055, bottom: 2480 }],
   ek_d: 0.146, ek_thikness: 0.0077, perf_depth: 2495,
   grp_done: 0, grp_mass: 0,
+  composition_id: null,
 }
 
 const REAGENTS = [
-  { key: 'ks_vol',            label: 'Объём КС',              unit: 'м³', color: '#2563EB' },
-  { key: 'fluid_vol',         label: 'Продавочная жидкость',   unit: 'м³', color: '#0EA5E9' },
-  { key: 'tovar_kislota_vol', label: 'Товарная кислота',       unit: 'м³', color: '#7C3AED' },
-  { key: 'hlor_bar_mass',     label: 'Хлористый барий',        unit: 'кг', color: '#0891B2' },
-  { key: 'hlor_bar_vol',      label: 'Хлористый барий (объём)', unit: 'м³', color: '#0891B2' },
-  { key: 'stabilizer_vol',    label: 'Стабилизатор Fe³⁺',       unit: 'м³', color: '#10B981' },
-  { key: 'inhibitor_vol',     label: 'Ингибитор коррозии',     unit: 'м³', color: '#F59E0B' },
-  { key: 'intensifier_vol',   label: 'Активатор',              unit: 'м³', color: '#EC4899' },
-  { key: 'plavikov_vol',      label: 'Плавиковая кислота',     unit: 'м³', color: '#A855F7' },
-  { key: 'water_vol',         label: 'Вода',                   unit: 'м³', color: '#64748B' },
+  { key: 'ks_vol',            label: 'Объём КС',              unit: 'м³', color: '#2563EB', optional: false },
+  { key: 'fluid_vol',         label: 'Продавочная жидкость',   unit: 'м³', color: '#0EA5E9', optional: false },
+  { key: 'tovar_kislota_vol', label: 'Товарная кислота',       unit: 'м³', color: '#7C3AED', optional: false },
+  { key: 'plavikov_vol',      label: 'Плавиковая кислота',     unit: 'м³', color: '#A855F7', optional: true },
+  { key: 'citric_acid_vol',   label: 'Лимонная кислота',       unit: 'м³', color: '#F97316', optional: false },
+  { key: 'acetic_acid_vol',   label: 'Уксусная кислота',       unit: 'м³', color: '#84CC16', optional: false },
+  { key: 'bffa_mass',         label: 'БФФА (навеска)',         unit: 'кг', color: '#06B6D4', optional: true },
+  { key: 'water_vol',         label: 'Вода',                   unit: 'м³', color: '#64748B', optional: false },
 ] as const
+
+const ADDITIVE_COLORS = ['#10B981', '#F59E0B', '#EC4899', '#14B8A6', '#6366F1', '#F43F5E', '#84CC16']
+
+function visibleReagents(result: VolumesResponse) {
+  return REAGENTS.filter(r => !r.optional || (result[r.key as keyof VolumesResponse] as number) > 0)
+}
 
 export function VolumesPage() {
   const navigate = useNavigate()
   const { set: setHandoff } = useHandoff()
   const [result, setResult] = useState<VolumesResponse | null>(null)
+  const [compositions, setCompositions] = useState<CompositionWithField[]>([])
+
+  useEffect(() => {
+    fieldsApi.listAllCompositions().then(setCompositions).catch(() => setCompositions([]))
+  }, [])
 
   const { register, handleSubmit, reset, getValues, setValue, watch, control, setError, formState: { errors, isSubmitting } } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -139,6 +152,22 @@ export function VolumesPage() {
           <Card title="Параметры скважины" badge="входные данные">
             <Field label="Идентификатор скважины" error={errors.well_id?.message}>
               <Input {...register('well_id')} placeholder="Самотлор-4127" className="input-text" />
+            </Field>
+
+            <Field label="Кислотный состав" optional
+              help={compositions.length === 0
+                ? <>Составы не заданы — добавьте их в разделе <Link to="/field-settings" className="link">«Месторождение»</Link>.</>
+                : 'Состав, заданный в настройках месторождения (HCl, лимонная, уксусная к-ты, HF или БФФА, доп. компоненты)'}>
+              <select
+                className="input input-text"
+                value={watch('composition_id') ?? ''}
+                onChange={e => setValue('composition_id', e.target.value === '' ? null : Number(e.target.value), { shouldValidate: true })}
+              >
+                <option value="">— не выбран —</option>
+                {compositions.map(c => (
+                  <option key={c.id} value={c.id}>{c.field_name} · {c.name}</option>
+                ))}
+              </select>
             </Field>
 
             <SectionRule>Геометрия пласта</SectionRule>
@@ -260,12 +289,22 @@ export function VolumesPage() {
           ) : (
             <Card title="Раскладка реагентов" badge={result.well_id}
               right={<Chip kind="ok" icon={<Check size={11}/>}>готово</Chip>}>
+              {result.composition_id != null && (
+                <div className="mb-3 -mt-1">
+                  <Chip kind="brand" icon={<FlaskConical size={11}/>}>
+                    {(() => {
+                      const c = compositions.find(x => x.id === result.composition_id)
+                      return c ? `${c.field_name} · ${c.name}` : `состав #${result.composition_id}`
+                    })()}
+                  </Chip>
+                </div>
+              )}
               <table className="dtable">
                 <thead>
                   <tr><th>Реагент</th><th className="num">Объём</th><th className="num">Ед.</th></tr>
                 </thead>
                 <tbody>
-                  {REAGENTS.map(r => (
+                  {visibleReagents(result).map(r => (
                     <tr key={r.key}>
                       <td>
                         <div className="flex items-center gap-2">
@@ -277,13 +316,26 @@ export function VolumesPage() {
                       <td className="num text-ink-400 mono">{r.unit}</td>
                     </tr>
                   ))}
+                  {result.additives.map((a, i) => (
+                    <tr key={a.name}>
+                      <td>
+                        <div className="flex items-center gap-2">
+                          <span style={{ width:8, height:8, borderRadius:'50%', background:ADDITIVE_COLORS[i % ADDITIVE_COLORS.length], display:'inline-block', flexShrink:0 }}/>
+                          {a.name}
+                        </div>
+                      </td>
+                      <td className="num font-semibold tabnum">{fmt.num(a.vol, 3)}</td>
+                      <td className="num text-ink-400 mono">м³</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
               <div className="mt-4 pt-4 border-t border-ink-200/70 flex justify-end gap-2">
                 <Button variant="secondary" size="sm" icon={<Download size={13}/>}
                   onClick={() => downloadCsv(`volumes-${result.well_id}.csv`, [
                     ['Реагент', 'Объём', 'Ед.'],
-                    ...REAGENTS.map(r => [r.label, result[r.key as keyof VolumesResponse], r.unit])
+                    ...visibleReagents(result).map(r => [r.label, result[r.key as keyof VolumesResponse] as number, r.unit]),
+                    ...result.additives.map(a => [a.name, a.vol, 'м³']),
                   ])}>
                   CSV
                 </Button>

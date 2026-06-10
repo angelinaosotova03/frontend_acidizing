@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
-import { Layers, FlaskConical, TrendingUp, Database, User, LogOut } from 'lucide-react'
+import { Layers, FlaskConical, TrendingUp, Database, MapPin, User, LogOut } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useAuth } from '../hooks/useAuth'
 
@@ -14,13 +14,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     catch { toast.error('Ошибка при выходе') }
   }
 
-  const navItems = [
-    { to: '/',              icon: <Layers size={15}/>,     label: 'Дашборд' },
-    { to: '/volumes',       icon: <FlaskConical size={15}/>,      label: 'Расчёт объёмов' },
-    { to: '/predict',       icon: <TrendingUp size={15}/>, label: 'Прогноз эффекта' },
-    { to: '/predict/batch', icon: <Database size={15}/>,   label: 'Батч‑прогноз' },
-    { to: '/profile',       icon: <User size={15}/>,       label: 'Профиль' },
+  const calcItems = [
+    { to: '/',              icon: <Layers size={15}/>,       label: 'Дашборд' },
+    { to: '/volumes',       icon: <FlaskConical size={15}/>, label: 'Расчёт объёмов' },
+    { to: '/predict',       icon: <TrendingUp size={15}/>,   label: 'Прогноз эффекта' },
+    { to: '/predict/batch', icon: <Database size={15}/>,     label: 'Батч‑прогноз' },
   ]
+  const settingsItems = [
+    { to: '/field-settings', icon: <MapPin size={15}/>, label: 'Месторождение' },
+  ]
+  const accountItems = [
+    { to: '/profile', icon: <User size={15}/>, label: 'Профиль' },
+  ]
+  const navItems = [...calcItems, ...settingsItems, ...accountItems]
 
   const initial = (user?.username ?? '?')[0].toUpperCase()
 
@@ -35,8 +41,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div>
             <div className="nav-section-title">Расчёты</div>
             <div className="space-y-0.5">
-              {navItems.slice(0, 4).map(item => (
+              {calcItems.map(item => (
                 <NavLink key={item.to} to={item.to} end={item.to === '/'}
+                  className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                  {item.icon} {item.label}
+                </NavLink>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="nav-section-title">Настройки</div>
+            <div className="space-y-0.5">
+              {settingsItems.map(item => (
+                <NavLink key={item.to} to={item.to}
                   className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                   {item.icon} {item.label}
                 </NavLink>
@@ -46,9 +63,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div>
             <div className="nav-section-title">Аккаунт</div>
             <div className="space-y-0.5">
-              <NavLink to="/profile" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-                <User size={15}/> Профиль
-              </NavLink>
+              {accountItems.map(item => (
+                <NavLink key={item.to} to={item.to}
+                  className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                  {item.icon} {item.label}
+                </NavLink>
+              ))}
             </div>
           </div>
         </nav>
@@ -110,11 +130,12 @@ function TopHeader() {
   const { user } = useAuth()
   const { pathname } = useLocation()
   const crumbs: Record<string, string[]> = {
-    '/':             ['Дашборд'],
-    '/volumes':      ['Расчёты', 'Расчёт объёмов'],
-    '/predict':      ['Расчёты', 'Прогноз эффекта'],
-    '/predict/batch':['Расчёты', 'Батч‑прогноз'],
-    '/profile':      ['Аккаунт', 'Профиль'],
+    '/':              ['Дашборд'],
+    '/volumes':       ['Расчёты', 'Расчёт объёмов'],
+    '/predict':       ['Расчёты', 'Прогноз эффекта'],
+    '/predict/batch': ['Расчёты', 'Батч‑прогноз'],
+    '/field-settings':['Настройки', 'Месторождение'],
+    '/profile':       ['Аккаунт', 'Профиль'],
   }
   const parts = crumbs[pathname] ?? ['Страница']
   const initial = (user?.username ?? '?')[0].toUpperCase()
