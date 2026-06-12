@@ -41,7 +41,7 @@ export function PredictHistoryPage() {
     <div className="space-y-5">
       <header className="flex items-end justify-between gap-4 flex-wrap">
         <div>
-          <div className="text-[11px] uppercase tracking-[.1em] text-ink-500 font-semibold mb-1">Расчёты · /predict/history</div>
+          <div className="text-[11px] uppercase tracking-[.1em] text-ink-500 font-semibold mb-1">Расчёты</div>
           <h1 className="text-[26px] font-semibold tracking-tight">История прогнозов</h1>
           <p className="text-sm text-ink-500 mt-1 max-w-[64ch]">Сохранённые расчёты по скважинам — Кпр, Рзаб, дебит жидкости и кривые добычи.</p>
         </div>

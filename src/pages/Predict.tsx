@@ -162,7 +162,7 @@ export function PredictPage() {
     <div className="space-y-5">
       <header className="flex items-end justify-between gap-4 flex-wrap">
         <div>
-          <div className="text-[11px] uppercase tracking-[.1em] text-ink-500 font-semibold mb-1">Расчёты · /predict</div>
+          <div className="text-[11px] uppercase tracking-[.1em] text-ink-500 font-semibold mb-1">Расчёты</div>
           <h1 className="text-[26px] font-semibold tracking-tight">Прогноз эффекта ОПЗ</h1>
           <p className="text-sm text-ink-500 mt-1 max-w-[64ch]">Расчёт прогноза эффекта кислотной обработки на 12 месяцев.</p>
         </div>

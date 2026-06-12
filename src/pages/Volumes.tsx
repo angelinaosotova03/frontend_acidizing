@@ -141,7 +141,7 @@ export function VolumesPage() {
     <div className="space-y-5">
       <header className="flex items-end justify-between gap-4 flex-wrap">
         <div>
-          <div className="text-[11px] uppercase tracking-[.1em] text-ink-500 font-semibold mb-1">Расчёты · /calculate_vols</div>
+          <div className="text-[11px] uppercase tracking-[.1em] text-ink-500 font-semibold mb-1">Расчёты</div>
           <h1 className="text-[26px] font-semibold tracking-tight">Расчёт объёмов реагентов</h1>
         </div>
         <Button variant="secondary" onClick={() => { reset(DEFAULTS); setResult(null) }}>Сбросить</Button>
@@ -270,8 +270,7 @@ export function VolumesPage() {
               )}
             </div>
 
-            <div className="mt-5 pt-4 border-t border-ink-200/70 flex items-center justify-between">
-              <div className="text-[11px] text-ink-500 mono">POST /calculate_vols · Volume Calc API</div>
+            <div className="mt-5 pt-4 border-t border-ink-200/70 flex items-center justify-end">
               <Button type="submit" loading={isSubmitting} size="lg"
                 icon={!isSubmitting ? <Calculator size={14}/> : undefined}>
                 Рассчитать объёмы
