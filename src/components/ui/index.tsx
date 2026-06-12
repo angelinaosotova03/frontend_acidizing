@@ -149,13 +149,13 @@ export function Modal({ open, onClose, title, children, footer, width = 420 }: M
   if (!open) return null
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4" style={{ background: 'rgba(15,23,42,.45)' }} onClick={onClose}>
-      <div className="card shadow-pop" style={{ width: '100%', maxWidth: width }} onClick={e => e.stopPropagation()}>
-        <div className="card-header">
+      <div className="card shadow-pop flex flex-col" style={{ width: '100%', maxWidth: width, maxHeight: '90vh' }} onClick={e => e.stopPropagation()}>
+        <div className="card-header flex-shrink-0">
           <div className="card-title">{title}</div>
           <button className="btn btn-icon btn-ghost" onClick={onClose}><X size={15} /></button>
         </div>
-        <div className="card-body">{children}</div>
-        {footer && <div className="px-[18px] pb-[14px] flex justify-end gap-2">{footer}</div>}
+        <div className="card-body overflow-y-auto">{children}</div>
+        {footer && <div className="px-[18px] pb-[14px] flex justify-end gap-2 flex-shrink-0">{footer}</div>}
       </div>
     </div>
   )
