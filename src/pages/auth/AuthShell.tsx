@@ -33,7 +33,7 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
         <div className="relative flex items-center justify-between text-[11px] text-blue-200/55">
-          <span className="mono">v1.5.0 · React 18 + TS</span>
+          <span className="mono">v1.5.0</span>
           <span className="flex items-center gap-1.5"><span className="dot green" /> сервис доступен</span>
         </div>
       </aside>

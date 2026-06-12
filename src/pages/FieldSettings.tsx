@@ -178,7 +178,7 @@ export function FieldSettingsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Месторождения */}
         <div className="lg:col-span-4">
-          <Card title="Месторождения" badge="GET /fields">
+          <Card title="Месторождения">
             <div className="space-y-1 mb-3">
               {loadingFields ? (
                 <div className="py-4 text-center text-ink-400 text-sm">Загрузка…</div>
@@ -226,7 +226,7 @@ export function FieldSettingsPage() {
                 body="Добавьте месторождение слева или выберите существующее, чтобы задать его кислотные составы." />
             </Card>
           ) : (
-            <Card title={`Кислотные составы · ${selectedField.name}`} badge="POST /fields/{id}/compositions"
+            <Card title={`Кислотные составы · ${selectedField.name}`}
               right={<Button size="sm" icon={<Plus size={12}/>} onClick={openCreateComposition}>Добавить состав</Button>}>
               {loadingCompositions ? (
                 <div className="py-6 text-center text-ink-400 text-sm">Загрузка…</div>

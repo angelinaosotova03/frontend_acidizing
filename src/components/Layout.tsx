@@ -119,7 +119,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </main>
         <footer className="px-5 md:px-7 py-3 text-[11px] text-ink-400 mono flex justify-between border-t border-ink-200 bg-white">
           <span>ОПЗ‑Моделирование · v1.5.0</span>
-          <span>React 18 + TypeScript</span>
         </footer>
       </div>
     </div>
@@ -150,14 +149,9 @@ function TopHeader() {
           </span>
         ))}
       </div>
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2 text-[12px] text-ink-500">
-          <span className="dot green" /><span className="mono">API · OK</span>
-        </div>
-        <div className="flex items-center gap-2 pl-4 border-l border-ink-200">
-          <div className="w-6 h-6 rounded-full bg-brand-600 text-white flex items-center justify-center text-[11px] font-semibold">{initial}</div>
-          <span className="text-[13px] text-ink-900 font-medium">{user?.username}</span>
-        </div>
+      <div className="flex items-center gap-2">
+        <div className="w-6 h-6 rounded-full bg-brand-600 text-white flex items-center justify-center text-[11px] font-semibold">{initial}</div>
+        <span className="text-[13px] text-ink-900 font-medium">{user?.username}</span>
       </div>
     </div>
   )

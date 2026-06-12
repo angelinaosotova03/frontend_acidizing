@@ -61,7 +61,7 @@ export function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <NavTile icon={<FlaskConical size={20}/>} title="Расчёт объёмов"
-          body="Раскладка кислотного состава: КС, продавка, товарная кислота, HF/БФФА, лимонная и уксусная кислоты, доп. компоненты."
+          body="Расчёт объёмов раствора и реагентов для обработки скважины."
           accent="brand" cta="Запустить расчёт" to="/volumes"/>
         <NavTile icon={<TrendingUp size={20}/>} title="Прогноз эффекта ОПЗ"
           body="Прогноз добычи на 12 месяцев после кислотной обработки с экстраполяцией по Арпсу."

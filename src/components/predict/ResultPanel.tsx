@@ -48,7 +48,7 @@ export function PredictResultPanel({ record, oilMonthsBefore, liquidMonthsBefore
   return (
     <div className="space-y-5">
       {hasOil && (
-        <Card title="Эффект ОПЗ — дебит нефти" badge="6.1">
+        <Card title="Эффект ОПЗ — дебит нефти">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
             <KpiCard label="Эффект (мес. 1)" value={record.oil_effect ?? 0} unit="м³/сут" color={C.forecast} decimals={2} delta />
             <KpiCard label="Накопленная доп. добыча" value={record.oil_cumulative ?? 0} unit="м³" color={C.cum} decimals={1} />
@@ -65,7 +65,7 @@ export function PredictResultPanel({ record, oilMonthsBefore, liquidMonthsBefore
       )}
 
       {hasLiquid && (
-        <Card title="Эффект ОПЗ — дебит жидкости" badge="6.2"
+        <Card title="Эффект ОПЗ — дебит жидкости"
           right={record.liquid_anchored === false ? (
             <Chip kind="warn" icon={<AlertTriangle size={12} />}>оценки месяца 1 могут немного отличаться</Chip>
           ) : undefined}>
@@ -85,7 +85,7 @@ export function PredictResultPanel({ record, oilMonthsBefore, liquidMonthsBefore
       )}
 
       {hasOil && hasLiquid && (
-        <Card title="Нефть vs Жидкость" badge="6.3" right={<span className="text-[11px] text-ink-500">обводнённость</span>}>
+        <Card title="Нефть vs Жидкость" right={<span className="text-[11px] text-ink-500">обводнённость</span>}>
           <OilVsLiquidChart
             oilBefore={oilMonthsBefore}
             oilAfter={record.oil_months_after!}
@@ -98,7 +98,7 @@ export function PredictResultPanel({ record, oilMonthsBefore, liquidMonthsBefore
       )}
 
       {hasBeforeAfter && (
-        <Card title="До / После" badge="6.4">
+        <Card title="До / После">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {hasKpr && (
               <BeforeAfterCard label="Кпр" unit="м³/сут/атм" before={record.kpr_before} after={record.kpr_after} decimals={4} goodDirection="up" />

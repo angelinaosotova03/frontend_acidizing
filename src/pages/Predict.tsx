@@ -164,7 +164,7 @@ export function PredictPage() {
         <div>
           <div className="text-[11px] uppercase tracking-[.1em] text-ink-500 font-semibold mb-1">Расчёты · /predict</div>
           <h1 className="text-[26px] font-semibold tracking-tight">Прогноз эффекта ОПЗ</h1>
-          <p className="text-sm text-ink-500 mt-1 max-w-[64ch]">Параметры скважины и обработки → прогноз Кпр, Рзаб, дебита жидкости и нефти на 12 месяцев.</p>
+          <p className="text-sm text-ink-500 mt-1 max-w-[64ch]">Расчёт прогноза эффекта кислотной обработки на 12 месяцев.</p>
         </div>
         <div className="flex gap-2">
           <Button variant="secondary" icon={<HistoryIcon size={13} />} onClick={() => navigate('/predict/history')}>История</Button>
@@ -212,7 +212,7 @@ export function PredictPage() {
             </div>
           </Card>
 
-          <Card className="lg:col-span-5" title="Параметры скважины и обработки" badge="ExtendedWellInput">
+          <Card className="lg:col-span-5" title="Параметры скважины и обработки">
             <div className="grid grid-cols-2 gap-x-4 gap-y-4 items-start">
               <Field label="Объём КС" unit="м³" error={errors.ks_vol}><NumberInput value={values.ks_vol} onChange={e => setField('ks_vol', +e.target.value)} error={errors.ks_vol} /></Field>
               <Field label="Объём продавки" unit="м³" error={errors.flush_vol}><NumberInput value={values.flush_vol} onChange={e => setField('flush_vol', +e.target.value)} error={errors.flush_vol} /></Field>
@@ -241,7 +241,7 @@ export function PredictPage() {
           </Card>
         </div>
 
-        <Card title="Дебит жидкости до ОПЗ" badge="опционально · LiquidCurveInput"
+        <Card title="Дебит жидкости до ОПЗ" badge="опционально"
           right={<Toggle value={values.liquidHistoryEnabled} onChange={v => setField('liquidHistoryEnabled', v)} label="заполнить" />}>
           {values.liquidHistoryEnabled ? (
             <div className="space-y-3">
@@ -262,13 +262,12 @@ export function PredictPage() {
             </div>
           ) : (
             <div className="text-[12px] text-ink-500">
-              Если заполнить помесячный дебит жидкости до ОПЗ, дополнительно будет рассчитан прогноз кривой дебита жидкости (раздел 6.2).
+              Если заполнить помесячный дебит жидкости до ОПЗ, дополнительно будет рассчитан прогноз кривой дебита жидкости.
             </div>
           )}
         </Card>
 
-        <div className="flex items-center justify-between">
-          <div className="text-[11px] text-ink-500 mono">/api/v1/predict/{'{kpr,pzab,liquid,oil'}{values.liquidHistoryEnabled ? ',liquid_curve' : ''}{'}'}</div>
+        <div className="flex items-center justify-end">
           <Button type="submit" size="lg" loading={loading} icon={!loading ? <TrendingUp size={14} /> : undefined}>
             Рассчитать
           </Button>

@@ -5,7 +5,6 @@ import { Save } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { AxiosError } from 'axios'
 import { useAuth } from '../hooks/useAuth'
-import { tokenStore } from '../api/axios'
 import { authApi } from '../api/auth'
 import { Button, Card, Field, Input, PasswordInput, PasswordRequirements } from '../components/ui'
 import { fmt } from '../utils/format'
@@ -51,13 +50,10 @@ export function ProfilePage() {
           <Field label="Имя пользователя"><Input value={user.username} disabled className="input-text" /></Field>
           <Field label="Email"><Input value={user.email ?? '—'} disabled className="input-text" /></Field>
           <Field label="Дата регистрации"><Input value={fmt.date(user.created_at)} disabled className="input-text" /></Field>
-          <Field label="Сессия (access JWT)">
-            <Input value={tokenStore.getAccess() ? '••••••••••.••.•••• активен (30 мин)' : 'нет'} disabled mono />
-          </Field>
         </div>
       </Card>
 
-      <Card title="Смена пароля" badge="PUT /auth/me/password">
+      <Card title="Смена пароля">
         <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 sm:grid-cols-3 gap-4" noValidate>
           <Field label="Текущий пароль" error={errors.current_password?.message}>
             <PasswordInput {...register('current_password')} autoComplete="current-password" error={errors.current_password?.message} />
@@ -73,14 +69,6 @@ export function ProfilePage() {
             <Button type="submit" loading={isSubmitting} icon={<Save size={14}/>}>Сохранить новый пароль</Button>
           </div>
         </form>
-      </Card>
-
-      <Card title="Безопасность сессии">
-        <div className="text-[13px] text-ink-700 leading-relaxed space-y-1">
-          <div><span className="mono text-ink-900">access_token</span> — JWT, 30 минут. Передаётся в <span className="mono">Authorization: Bearer</span>.</div>
-          <div><span className="mono text-ink-900">refresh_token</span> — JWT, 7 дней. Хранится в localStorage. Автоматически обновляет access при истечении.</div>
-          <div>При 401 Axios-интерцептор вызывает <span className="mono">/auth/refresh</span> и повторяет запрос. Если refresh невалиден — редирект на <span className="mono">/login</span>.</div>
-        </div>
       </Card>
     </div>
   )
