@@ -18,7 +18,7 @@ export interface WellInput {
   flush_vol: number
   perf_sum: number
   nkt_vol: number
-  to_lower_perf: number
+  vol_ek: number
   grp_done: 0 | 1
   grp_mass: number
   is_horizontal: 0 | 1
@@ -129,7 +129,7 @@ export interface PredictHistoryItem extends PredictRecordFields {
   flush_vol: number | null
   perf_sum: number | null
   nkt_vol: number | null
-  to_lower_perf: number | null
+  vol_ek: number | null
   grp_done: number | null
   grp_mass: number | null
   is_horizontal: number | null
@@ -160,7 +160,7 @@ export interface PredictFormValues {
   flush_vol: number
   perf_sum: number
   nkt_vol: number
-  to_lower_perf: number
+  vol_ek: number
   grp_done: boolean
   grp_mass: number
   is_horizontal: boolean

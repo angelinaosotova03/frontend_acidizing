@@ -18,7 +18,7 @@ const DEFAULTS: PredictFormValues = {
   flush_vol: 32.0,
   perf_sum: 7.05,
   nkt_vol: 8.03,
-  to_lower_perf: 0,
+  vol_ek: 0,
   grp_done: false,
   grp_mass: 0,
   is_horizontal: false,
@@ -75,7 +75,7 @@ export function PredictPage() {
     if (values.flush_vol < 0) errs.flush_vol = 'Должно быть ≥ 0'
     if (!(values.perf_sum > 0)) errs.perf_sum = 'Должно быть > 0'
     if (!(values.nkt_vol > 0)) errs.nkt_vol = 'Должно быть > 0'
-    if (values.to_lower_perf < 0) errs.to_lower_perf = 'Должно быть ≥ 0'
+    if (values.vol_ek < 0) errs.vol_ek = 'Должно быть ≥ 0'
     if (!(values.reservoir_pressure > 0)) errs.reservoir_pressure = 'Должно быть > 0'
     if (!(values.pzab_before > 0)) errs.pzab_before = 'Должно быть > 0'
     if (!(values.kpr_before > 0)) errs.kpr_before = 'Должно быть > 0'
@@ -218,7 +218,7 @@ export function PredictPage() {
               <Field label="Объём продавки" unit="м³" error={errors.flush_vol}><NumberInput value={values.flush_vol} onChange={e => setField('flush_vol', +e.target.value)} error={errors.flush_vol} /></Field>
               <Field label="Перф. толщина" unit="м" error={errors.perf_sum}><NumberInput value={values.perf_sum} onChange={e => setField('perf_sum', +e.target.value)} error={errors.perf_sum} /></Field>
               <Field label="Объём НКТ" unit="м³" error={errors.nkt_vol}><NumberInput value={values.nkt_vol} onChange={e => setField('nkt_vol', +e.target.value)} error={errors.nkt_vol} /></Field>
-              <Field label="Закачка в нижние интервалы" unit="м³" error={errors.to_lower_perf}><NumberInput value={values.to_lower_perf} onChange={e => setField('to_lower_perf', +e.target.value)} error={errors.to_lower_perf} /></Field>
+              <Field label="Объем ЭК" unit="м³" error={errors.vol_ek}><NumberInput value={values.vol_ek} onChange={e => setField('vol_ek', +e.target.value)} error={errors.vol_ek} /></Field>
               <Field label="Пластовое давление" unit="атм" error={errors.reservoir_pressure}><NumberInput value={values.reservoir_pressure} onChange={e => setField('reservoir_pressure', +e.target.value)} error={errors.reservoir_pressure} /></Field>
               <Field label="Рзаб до ОПЗ" unit="атм" error={errors.pzab_before}><NumberInput value={values.pzab_before} onChange={e => setField('pzab_before', +e.target.value)} error={errors.pzab_before} /></Field>
               <Field label="Кпр до ОПЗ" unit="м³/сут/атм" error={errors.kpr_before}><NumberInput value={values.kpr_before} onChange={e => setField('kpr_before', +e.target.value)} error={errors.kpr_before} /></Field>

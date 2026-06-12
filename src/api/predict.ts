@@ -27,7 +27,7 @@ export function toExtendedWellInput(form: PredictFormValues): ExtendedWellInput 
     flush_vol: form.flush_vol,
     perf_sum: form.perf_sum,
     nkt_vol: form.nkt_vol,
-    to_lower_perf: form.to_lower_perf,
+    vol_ek: form.vol_ek,
     grp_done: form.grp_done ? 1 : 0,
     grp_mass: form.grp_done ? form.grp_mass : 0,
     is_horizontal: form.is_horizontal ? 1 : 0,
