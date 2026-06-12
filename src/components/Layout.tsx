@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
-import { Layers, FlaskConical, TrendingUp, Database, MapPin, User, LogOut } from 'lucide-react'
+import { Layers, FlaskConical, TrendingUp, History, MapPin, User, LogOut } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useAuth } from '../hooks/useAuth'
 
@@ -17,8 +17,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const calcItems = [
     { to: '/',              icon: <Layers size={15}/>,       label: 'Дашборд' },
     { to: '/volumes',       icon: <FlaskConical size={15}/>, label: 'Расчёт объёмов' },
-    { to: '/predict',       icon: <TrendingUp size={15}/>,   label: 'Прогноз эффекта' },
-    { to: '/predict/batch', icon: <Database size={15}/>,     label: 'Батч‑прогноз' },
+    { to: '/predict',         icon: <TrendingUp size={15}/>, label: 'Прогноз эффекта' },
+    { to: '/predict/history', icon: <History size={15}/>,    label: 'История прогнозов' },
   ]
   const settingsItems = [
     { to: '/field-settings', icon: <MapPin size={15}/>, label: 'Месторождение' },
@@ -132,8 +132,8 @@ function TopHeader() {
   const crumbs: Record<string, string[]> = {
     '/':              ['Дашборд'],
     '/volumes':       ['Расчёты', 'Расчёт объёмов'],
-    '/predict':       ['Расчёты', 'Прогноз эффекта'],
-    '/predict/batch': ['Расчёты', 'Батч‑прогноз'],
+    '/predict':         ['Расчёты', 'Прогноз эффекта'],
+    '/predict/history': ['Расчёты', 'История прогнозов'],
     '/field-settings':['Настройки', 'Месторождение'],
     '/profile':       ['Аккаунт', 'Профиль'],
   }

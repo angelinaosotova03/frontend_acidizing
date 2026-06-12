@@ -200,8 +200,11 @@ export function PasswordRequirements({ pwd }: { pwd: string }) {
 interface KpiCardProps { label: string; value: number; unit: string; color: string; decimals?: number; delta?: boolean }
 export function KpiCard({ label, value, unit, color, decimals = 2, delta = false }: KpiCardProps) {
   return (
-    <div className="kpi" style={{ borderTopColor: color, borderTopWidth: 2 }}>
-      <div className="label">{label}</div>
+    <div className="kpi">
+      <div className="label" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <span style={{ display: 'inline-block', width: 6, height: 6, background: color, flexShrink: 0 }} />
+        {label}
+      </div>
       <div className="value tabnum">
         {delta && value > 0 ? '+' : ''}
         {value.toLocaleString('ru-RU', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}

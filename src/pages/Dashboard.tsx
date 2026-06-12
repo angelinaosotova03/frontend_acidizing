@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FlaskConical, TrendingUp, ArrowRight } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
-import { Card, Modal, Button, SparkBar } from '../components/ui'
-import { ForecastChart } from '../components/charts'
-import { predictApi, type PredictHistoryItem } from '../api/predict'
+import { Card, Modal, Button } from '../components/ui'
+import { PredictResultPanel, monthsBeforeFromHistory } from '../components/predict/ResultPanel'
+import { predictApi } from '../api/predict'
+import type { PredictHistoryItem } from '../types/predict'
 import { volumesApi, type VolumeHistoryItem } from '../api/volumes'
-import { fmt, computeArpsBaseline } from '../utils/format'
+import { fmt } from '../utils/format'
 
 interface HistoryRow {
   key:     string
@@ -33,7 +34,7 @@ export function DashboardPage() {
         ])
         const rows: HistoryRow[] = []
         if (preds.status === 'fulfilled')
-          preds.value.forEach(p => rows.push({ key: `p-${p.well_id}-${p.updated_at}`, well_id: p.well_id, type: 'predict', date: p.updated_at, effect: p.effect, raw: p }))
+          preds.value.forEach(p => rows.push({ key: `p-${p.well_id}-${p.updated_at}`, well_id: p.well_id, type: 'predict', date: p.updated_at, effect: p.oil_effect ?? p.liquid_effect ?? undefined, raw: p }))
         if (vols.status === 'fulfilled')
           vols.value.forEach(v => rows.push({ key: `v-${v.id}`, well_id: v.well_id, type: 'volumes', date: v.created_at, raw: v }))
         rows.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -110,7 +111,7 @@ export function DashboardPage() {
       {/* Detail modal */}
       <Modal open={!!selected} onClose={() => setSelected(null)}
         title={selected ? `${selected.well_id} · ${selected.type === 'predict' ? 'Прогноз' : 'Объёмы'}` : ''}
-        width={selected?.type === 'predict' ? 680 : 520}
+        width={selected?.type === 'predict' ? 760 : 520}
         footer={
           <div className="flex gap-2">
             <Button variant="secondary" onClick={() => setSelected(null)}>Закрыть</Button>
@@ -127,47 +128,10 @@ export function DashboardPage() {
 }
 
 function PredictDetail({ row }: { row: PredictHistoryItem }) {
-  const ma       = row.months_after  ?? []
-  const mb       = row.months_before ?? []
-  const baseline = mb.length === 12 ? computeArpsBaseline(mb) : ma.map(v => v * 0.78)
-
+  const { oil, liquid } = monthsBeforeFromHistory(row)
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-3">
-        <div className="kpi" style={{padding:'12px 14px'}}>
-          <div className="label" style={{fontSize:10}}>Эффект в 1‑й месяц</div>
-          <div className="value tabnum" style={{fontSize:22, color:'#22C55E'}}>+{fmt.num(row.effect, 2)} <span className="unit">м³/сут</span></div>
-        </div>
-        <div className="kpi" style={{padding:'12px 14px'}}>
-          <div className="label" style={{fontSize:10}}>Накопленная добыча</div>
-          <div className="value tabnum" style={{fontSize:22, color:'#F97316'}}>{fmt.num(row.cumulative, 1)} <span className="unit">м³</span></div>
-        </div>
-      </div>
-      {ma.length === 12 && (
-        <>
-          <ForecastChart baseline={baseline} forecast={ma} height={200} />
-          <div className="overflow-x-auto">
-            <table className="dtable" style={{fontSize:11.5}}>
-              <thead>
-                <tr>
-                  <th>Метрика</th>
-                  {ma.map((_,i) => <th key={i} className="num">M+{i+1}</th>)}
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><span className="dot red" style={{marginRight:6}}/>Арпс (без ОПЗ)</td>
-                  {baseline.map((v,i) => <td key={i} className="num">{fmt.num(v,2)}</td>)}
-                </tr>
-                <tr>
-                  <td><span className="dot green" style={{marginRight:6}}/>С ОПЗ</td>
-                  {ma.map((v,i) => <td key={i} className="num">{fmt.num(v,2)}</td>)}
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </>
-      )}
+      <PredictResultPanel record={row} oilMonthsBefore={oil} liquidMonthsBefore={liquid} />
       <div className="flex items-center gap-4 text-[11px] text-ink-500 mono pt-1 border-t border-ink-200/70">
         <span>perf_sum: {fmt.num(row.perf_sum, 1)} м</span>
         <span>ks_vol: {fmt.num(row.ks_vol, 2)} м³</span>

@@ -9,7 +9,7 @@ import { DashboardPage }      from './pages/Dashboard'
 import { FieldSettingsPage }  from './pages/FieldSettings'
 import { VolumesPage }        from './pages/Volumes'
 import { PredictPage }        from './pages/Predict'
-import { BatchPredictPage }   from './pages/BatchPredict'
+import { PredictHistoryPage } from './pages/PredictHistory'
 import { ProfilePage }        from './pages/Profile'
 
 export default function App() {
@@ -23,8 +23,8 @@ export default function App() {
       <Route path="/" element={<ProtectedRoute><AppShell><DashboardPage /></AppShell></ProtectedRoute>} />
       <Route path="/field-settings" element={<ProtectedRoute><AppShell><FieldSettingsPage /></AppShell></ProtectedRoute>} />
       <Route path="/volumes"        element={<ProtectedRoute><AppShell><VolumesPage /></AppShell></ProtectedRoute>} />
-      <Route path="/predict"        element={<ProtectedRoute><AppShell><PredictPage /></AppShell></ProtectedRoute>} />
-      <Route path="/predict/batch"  element={<ProtectedRoute><AppShell><BatchPredictPage /></AppShell></ProtectedRoute>} />
+      <Route path="/predict"         element={<ProtectedRoute><AppShell><PredictPage /></AppShell></ProtectedRoute>} />
+      <Route path="/predict/history" element={<ProtectedRoute><AppShell><PredictHistoryPage /></AppShell></ProtectedRoute>} />
       <Route path="/profile"        element={<ProtectedRoute><AppShell><ProfilePage /></AppShell></ProtectedRoute>} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
